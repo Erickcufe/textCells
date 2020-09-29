@@ -40,6 +40,7 @@ oligodendrocyte$Class <- "Oligodendrocyte"
 cells <- rbind(astrocyte, neuron, microglia,
                endothelial, oligodendrocyte)
 usethis::use_data(cells, overwrite = TRUE)
+# foreign::write.arff(cells, "../../../Desktop/cells.arff")
 
 # IDFTransform = TRUE
 # TFTransform = TRUE
@@ -53,13 +54,21 @@ usethis::use_data(cells, overwrite = TRUE)
 # WordToKeep = 1000
 # Filter Normalize
 # Save from WEKA to R
-cells_process_weka <- read.csv("cells_processed_tf_idf.csv")
+cells_process_weka <- read.csv("cells_raw.csv")
+cells_process_weka <- cbind(PMID = cells$PMID, cells_process_weka[,-1],
+                            Class = cells_process_weka$Class )
+
 usethis::use_data(cells_process_weka, overwrite = TRUE)
+
+Dictionary <- colnames(cells_process_weka[,-c(1,1296)])
 
 GainRatio <- read.csv("GainRatio_cells.csv")
 InfoGain <- read.csv("InfoGain_cells.csv")
 Dictionary <- read.csv("Dictionary_neurovascular.csv")
+
 usethis::use_data(GainRatio, overwrite = TRUE)
 usethis::use_data(InfoGain, overwrite = TRUE)
 usethis::use_data(Dictionary, overwrite = TRUE)
 
+
+# foreign::write.arff(cells_process_weka, "cells.arff")
