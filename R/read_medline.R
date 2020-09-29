@@ -1,3 +1,23 @@
+#' Read Pubmed Format
+#'
+#' A function to read pubmed (MEDLINE) format text plane, to convert into data.frame
+#'
+#' @param text text plain (oubmed format) of journal articles
+#' @param key1 "PMID-" to obtain the PMID of each abstract
+#' @param key2 "AB  -" to obtain the abstract of each PMID
+#'
+#' @return
+#' A data.frame with the PMID and Abstract
+#'
+#' @import
+#' stringr
+#'
+#' @examples
+#' example1 <- readLines("pubmed-Oligodendr_ODP-set.txt")
+#' prueba <- read_medline(example1)
+#'
+#' @rdname read_medline
+#' @export read_medline
 read_medline <- function(text, key1 = "PMID-", key2 = "AB  -"){
   a <- vector()
   for (i in 1:length(text)){
