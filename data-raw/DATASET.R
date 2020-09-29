@@ -29,3 +29,17 @@ usethis::use_data(neuron, overwrite = TRUE)
 endo <- readLines("pubmed-endothelia-set.txt")
 endothelial <- read_medline(endo)
 usethis::use_data(endothelial, overwrite = TRUE)
+
+
+astrocyte$Class <- "Astrocyte"
+neuron$Class <- "Neuron"
+microglia$Class <- "Microglia"
+endothelial$Class <- "Endothelial"
+oligodendrocyte$Class <- "Oligodendrocyte"
+
+cells <- rbind(astrocyte, neuron, microglia,
+               endothelial, oligodendrocyte)
+usethis::use_data(cells, overwrite = TRUE)
+
+
+readr::write_csv(cells, "../../../Desktop/cells.csv")
