@@ -56,3 +56,10 @@ usethis::use_data(cells, overwrite = TRUE)
 cells_process_weka <- read.csv("cells_processed_tf_idf.csv")
 usethis::use_data(cells_process_weka, overwrite = TRUE)
 
+GainRatio <- read.csv("GainRatio_cells.csv")
+InfoGain <- read.csv("InfoGain_cells.csv")
+Dictionary <- read.csv("Dictionary_neurovascular.csv")
+usethis::use_data(GainRatio, overwrite = TRUE)
+usethis::use_data(InfoGain, overwrite = TRUE)
+usethis::use_data(Dictionary, overwrite = TRUE)
+
