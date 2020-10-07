@@ -6,27 +6,27 @@
 
 # Oligodendrocyte
 
-odp <- readLines("pubmed-Oligodendr_ODP-set.txt")
+odp <- readLines("original_pubmed/pubmed-Oligodendr_ODP-set.txt")
 oligo1 <- read_medline(odp)
-oligo <- readLines("pubmed-oligodendr-set.txt")
+oligo <- readLines("original_pubmed/pubmed-oligodendr-set.txt")
 oligo2 <- read_medline(oligo)
 oligodendrocyte <- rbind(oligo1, oligo2)
 oligodendrocyte <- oligodendrocyte[!duplicated(oligodendrocyte$PMID),]
 usethis::use_data(oligodendrocyte, overwrite = TRUE)
 
-astro <- readLines("pubmed-astrocyteA-set.txt")
+astro <- readLines("original_pubmed/pubmed-astrocyteA-set.txt")
 astrocyte <- read_medline(astro)
 usethis::use_data(astrocyte, overwrite = TRUE)
 
-micro <- readLines("pubmed-microgliaA-set.txt")
+micro <- readLines("original_pubmed/pubmed-microgliaA-set.txt")
 microglia <- read_medline(micro)
 usethis::use_data(microglia, overwrite = TRUE)
 
-neu <- readLines("pubmed-neuronANDd-set.txt")
+neu <- readLines("original_pubmed/pubmed-neuronANDd-set.txt")
 neuron <- read_medline(neu)
 usethis::use_data(neuron, overwrite = TRUE)
 
-endo <- readLines("pubmed-endothelia-set.txt")
+endo <- readLines("original_pubmed/pubmed-endothelia-set.txt")
 endothelial <- read_medline(endo)
 usethis::use_data(endothelial, overwrite = TRUE)
 
@@ -94,10 +94,10 @@ colnames(Astrocyte_unicos) <- "PMID"
 Endothelial_unicos <- data.frame(aver[28,7])
 colnames(Endothelial_unicos) <- "PMID"
 
-Neuron_unicos <- data.frame(aver[28,7])
+Neuron_unicos <- data.frame(aver[24,7])
 colnames(Neuron_unicos) <- "PMID"
 
-Microglia_unicos <- data.frame(aver[24,7])
+Microglia_unicos <- data.frame(aver[30,7])
 colnames(Microglia_unicos) <- "PMID"
 
 Oligodendrocyte_unicos <- data.frame(aver[16,7])
@@ -108,6 +108,20 @@ endothelial_final <- endothelial[endothelial$PMID %in% Endothelial_unicos$PMID,]
 neuron_final <- neuron[neuron$PMID %in% Neuron_unicos$PMID,]
 microglia_final <- microglia[microglia$PMID %in% Microglia_unicos$PMID,]
 oligodendrocyte_final <- oligodendrocyte[oligodendrocyte$PMID %in% Oligodendrocyte_unicos$PMID,]
+
+all_data_before_process_4clasess <- rbind(astrocytes_final, endothelial_final,
+                                 neuron_final, microglia_final)
+all_data_before_process_5clasess <- rbind(astrocytes_final, endothelial_final,
+                                          neuron_final, microglia_final,
+                                          oligodendrocyte_final)
+usethis::use_data(all_data_before_process_4clasess, overwrite = TRUE)
+usethis::use_data(all_data_before_process_5clasess, overwrite = TRUE)
+
+
+# foreign::write.arff(all_data_before_process_4clasess, "all_data_before_process_4clasess.arff")
+# foreign::write.arff(all_data_before_process_5clasess, "all_data_before_process_5clasess.arff")
+
+# Cut the data to balance the class & create the dictionary with equivalence of words
 
 neuron_final_1000 <- neuron_final[neuron_final$PMID %in% sample(neuron_final$PMID, 1000),]
 neuron_test <- neuron_final[!(neuron_final$PMID %in% neuron_final_1000$PMID),]
@@ -120,18 +134,6 @@ endo_test <- endothelial_final[!(endothelial_final$PMID %in% endo_1000$PMID),]
 
 micro_1000 <- microglia_final[microglia_final$PMID %in% sample(microglia_final$PMID, 1000),]
 micro_test <- microglia_final[!(microglia_final$PMID %in% micro_1000$PMID),]
-
-
-
-Datatrain_beforeWEKA_4clases <- rbind(astrocyte_1000, endo_1000,
-                            neuron_final_1000, micro_1000)
-usethis::use_data(Datatrain_beforeWEKA_4clases, overwrite = TRUE)
-
-Datatest_beforeWEKA_4clases <- rbind(astro_test, endo_test, micro_test,
-                                     neuron_test)
-usethis::use_data(Datatest_beforeWEKA_4clases, overwrite = TRUE)
-
-foreign::write.arff(Datatrain_beforeWEKA_4clases, "cells_pre4classes.arff")
 
 # IDFTransform = TRUE
 # TFTransform = TRUE
@@ -146,12 +148,32 @@ foreign::write.arff(Datatrain_beforeWEKA_4clases, "cells_pre4classes.arff")
 # Filter Normalize
 # Save from WEKA to R
 
-data_afterWEKA_4Classes <- read.csv("cells_afteWEKA4classes.csv")
-usethis::use_data(data_afterWEKA, overwrite = TRUE)
+Datatrain_beforeWEKA_4clases <- rbind(astrocyte_1000, endo_1000,
+                            neuron_final_1000, micro_1000)
+usethis::use_data(Datatrain_beforeWEKA_4clases, overwrite = TRUE)
 
-# FALTA EQUILIBRAR LAS CLASES
-# SE PODRIAN QUITAR 7100 PMID DE NEURON, O DEJAR TODAS EN MIL, Y
-# HACER UN INTENTO CON 5 CLASES Y 4 CLASES, CON 1000 INSTANCIAS CADA CLASE
+Datatest_beforeWEKA_4clases <- rbind(astro_test, endo_test, micro_test,
+                                     neuron_test)
+usethis::use_data(Datatest_beforeWEKA_4clases, overwrite = TRUE)
+
+# foreign::write.arff(Datatrain_beforeWEKA_4clases, "cells_pre4classes.arff")
+# StringToNominal -R last
+# IDFTransform = TRUE
+# TFTransform = TRUE
+# lowerCaseTokens = TRUE
+# minTermFreq = 50
+# normalizeDocLength = Normalize all data
+# ouputWordCounts = TRUE
+# stemmer = SnowballStemmer -English
+# stopwordsHandler = Rainbow
+# tokenizer = WordTokenizer -delimiters .,;:'"()?!
+# WordToKeep = 1000
+# Filter Normalize
+# Save from WEKA to R
+
+data_afterWEKA_4Classes <- read.csv("cells_afteWEKA4classes.csv")
+usethis::use_data(data_afterWEKA_4Classes, overwrite = TRUE)
+
 
 
 
